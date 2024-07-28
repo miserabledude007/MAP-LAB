@@ -26,3 +26,7 @@ int main(int argc, char** argv) {
 COMP:-  mpicc -o mpi_broadcast mpi_broadcast.c
 EXEC:-  mpirun -np <number_of_processes> ./mpi_broadcast
 :- mpirun -np 4 ./mpi_broadcast
+O/P:-
+rank 1 received 777
+rank 2 received 777
+rank 3 received 777
