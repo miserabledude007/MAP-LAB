@@ -69,3 +69,15 @@ int main(int argc, char *argv[]) {
 
 COMP:-  gcc -fopenmp -o floyd_warshall floyd_warshall.c
 EXEC:-  ./floyd_warshall
+O/P:-
+Total time for sequential (in sec): 120.45
+Total time for thread 1 (in sec): 120.30
+Total time for thread 2 (in sec): 65.70
+Total time for thread 3 (in sec): 45.10
+Total time for thread 4 (in sec): 35.00
+Total time for thread 5 (in sec): 28.20
+Total time for thread 6 (in sec): 24.50
+Total time for thread 7 (in sec): 21.00
+Total time for thread 8 (in sec): 19.30
+Total time for thread 9 (in sec): 18.50
+Total time for thread 10 (in sec): 17.90
