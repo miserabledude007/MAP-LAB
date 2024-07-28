@@ -40,3 +40,5 @@ int main() {
 
 COMP:-  gcc -fopenmp -o montecarlo_pi montecarlo_pi.c
 EXEC:-  ./montecarlo_pi
+O/P:-
+Final Estimation of Pi = 3.141528
