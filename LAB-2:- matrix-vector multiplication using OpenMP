@@ -28,3 +28,6 @@ int main() {
 
 COMP:-  gcc -fopenmp -o matrix_mult matrix_mult.c
 EXEC:-  ./matrix_mult
+O/P:-
+c[0] = 28.000000 
+c[1] = 64.000000 
