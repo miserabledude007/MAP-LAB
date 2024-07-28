@@ -45,3 +45,6 @@ int main() {
 
 COMP:-  g++ -fopenmp -o prefix_sum prefix_sum.cpp
 EXEC:-  ./prefix_sum
+O/P:-
+Array prefix sum: 15
+Correct sum
