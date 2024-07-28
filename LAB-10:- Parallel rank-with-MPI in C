@@ -31,3 +31,8 @@ int main(int argc, char** argv) {
 COMP:-  mpicc -o mpi_rank_example mpi_rank_example.c tmpi_rank.c
 EXEC:-  mpirun -np <number_of_processes> ./mpi_rank_example
 :- mpirun -np 4 ./mpi_rank_example
+O/P:-
+Rank for 0.123456 on process 0 - 1
+Rank for 0.654321 on process 1 - 2
+Rank for 0.987654 on process 2 - 3
+Rank for 0.543210 on process 3 - 0
