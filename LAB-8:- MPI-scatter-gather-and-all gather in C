@@ -77,3 +77,8 @@ int main(int argc, char** argv) {
 COMP:-  mpicc -o mpi_avg mpi_avg.c
 EXEC:-  mpirun -np <number_of_processes> ./mpi_avg <num_elements_per_proc>
 :- mpirun -np 4 ./mpi_avg 1000
+O/P:-
+Avg of all elements from proc 0 is 0.499874
+Avg of all elements from proc 1 is 0.499874
+Avg of all elements from proc 2 is 0.499874
+Avg of all elements from proc 3 is 0.499874
