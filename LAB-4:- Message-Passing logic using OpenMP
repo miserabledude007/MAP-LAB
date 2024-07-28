@@ -1,0 +1,17 @@
+FILE NAME:-  hello_world_parallel.c
+
+#include <omp.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+int main (int argc, char* argv[])
+{
+    #pragma omp parallel
+    {
+        printf("Hello World... from thread = %d\n", omp_get_thread_num());
+    }
+    return 0;
+}
+
+COMP:-  gcc -fopenmp -o hello_world_parallel hello_world_parallel.c
+EXEC:-  ./hello_world_parallel
