@@ -5,7 +5,7 @@ FILE NAME:-  mpi_send_recv.c
 #include <mpi.h>
 
 int main(int argc, char **argv) {
-    int *array;
+    int number;
     int tag = 1;
     int size;
     int rank;
@@ -15,26 +15,17 @@ int main(int argc, char **argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    if (rank == 0) {
-        array = malloc(10 * sizeof(int));
-        if (!array) {
-            MPI_Abort(MPI_COMM_WORLD, 1);
-        }
-        MPI_Send(array, 10, MPI_INT, 1, tag, MPI_COMM_WORLD);
-    }
-
-    if (rank == 1) {
-        array = malloc(10 * sizeof(int));
-        if (!array) {
-            MPI_Abort(MPI_COMM_WORLD, 1);
-        }
-        MPI_Recv(array, 10, MPI_INT, 0, tag, MPI_COMM_WORLD, &status);
-        // more code here to process the received data
-        free(array);
+    if (size != 2) {
+        fprintf(stderr, "This program requires exactly 2 processes.\n");
+        MPI_Abort(MPI_COMM_WORLD, 1);
     }
 
     if (rank == 0) {
-        free(array);
+        number = -1; // Set the number to -1
+        MPI_Send(&number, 1, MPI_INT, 1, tag, MPI_COMM_WORLD);
+    } else if (rank == 1) {
+        MPI_Recv(&number, 1, MPI_INT, 0, tag, MPI_COMM_WORLD, &status);
+        printf("Process %d received number %d from process 0\n", rank, number);
     }
 
     MPI_Finalize();
@@ -43,3 +34,5 @@ int main(int argc, char **argv) {
 
 COMP:-  mpicc -o mpi_send_recv mpi_send_recv.c
 EXEC:-  mpirun -np 2 ./mpi_send_recv
+O/P:-
+Process 1 received number -1 from process 0
