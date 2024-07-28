@@ -15,3 +15,8 @@ int main (int argc, char* argv[])
 
 COMP:-  gcc -fopenmp -o hello_world_parallel hello_world_parallel.c
 EXEC:-  ./hello_world_parallel
+O/P:-
+Hello World... from thread = 0
+Hello World... from thread = 1
+Hello World... from thread = 2
+Hello World... from thread = 3
