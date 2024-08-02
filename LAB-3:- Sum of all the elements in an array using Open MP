@@ -5,40 +5,39 @@ FILE NAME:-  prefix_sum.cpp
 using namespace std;
 
 int main() {
+    // Initialize the vector with some values
     vector<int> arr{3, 1, 2, 5, 4, 0};
-    queue<int> data;
-    int arr_sum = accumulate(arr.begin(), arr.end(), 0);
-    int arr_size = arr.size();
-    int new_data_size, x, y;
+    int sum = 0;
+    int max_value = INT_MIN; // Initialize to the smallest possible integer value
 
-    for (int i = 0; i < arr_size; i++) {
-        data.push(arr[i]);
-    }
-
-    omp_set_num_threads(ceil(arr_size / 2.0));
-
+    // Compute the sum and find the maximum value in parallel
     #pragma omp parallel
     {
+        int local_sum = 0;
+        int local_max = INT_MIN;
+
+        // Each thread computes its local sum and finds the local maximum
+        #pragma omp for
+        for (size_t i = 0; i < arr.size(); ++i) {
+            local_sum += arr[i];
+            if (arr[i] > local_max) {
+                local_max = arr[i];
+            }
+        }
+
+        // Update the shared sum variable and the maximum value in critical sections
         #pragma omp critical
         {
-            new_data_size = data.size();
-            for (int j = 1; j < new_data_size; j = j * 2) {
-                x = data.front();
-                data.pop();
-                y = data.front();
-                data.pop();
-                data.push(x + y);
+            sum += local_sum;
+            if (local_max > max_value) {
+                max_value = local_max;
             }
         }
     }
 
-    cout << "Array prefix sum: " << data.front() << endl;
-
-    if (arr_sum == data.front()) {
-        cout << "Correct sum" << endl;
-    } else {
-        cout << "Incorrect Answer" << endl;
-    }
+    // Print the results
+    cout << "Array sum: " << sum << endl;
+    cout << "Largest number in the array: " << max_value << endl;
 
     return 0;
 }
@@ -46,5 +45,5 @@ int main() {
 COMP:-  g++ -fopenmp -o prefix_sum prefix_sum.cpp
 EXEC:-  ./prefix_sum
 O/P:-
-Array prefix sum: 15
-Correct sum
+Array sum: 15
+Largest number in the array: 5
