@@ -20,3 +20,5 @@ O/P:-
 Before: total thread number is 1
 Thread id is 0
 After: total thread number is 1
+
+GC:- %%writefile thread_example.c, !gcc -fopenmp -o thread_example thread_example.c, !./thread_example
