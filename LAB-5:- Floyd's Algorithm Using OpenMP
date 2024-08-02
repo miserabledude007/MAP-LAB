@@ -1,83 +1,64 @@
 FILE NAME:-  floyd_warshall.c
 
 #include <stdio.h>
-#include <math.h>
-#include <stdlib.h>
-#include <time.h>
 #include <omp.h>
 
-#define N 1200
+#define INF 1000000000
+#define V 4
 
-#ifndef min
-#define min(a,b) (((a) < (b)) ? (a) : (b))
-#endif
+int graph[V][V] = {
+    {0, 3, INF, 5},
+    {2, 0, INF, 4},
+    {INF, 1, 0, INF},
+    {INF, INF, 2, 0}
+};
 
-int distance_matrix[N][N] = {0};
-
-int main(int argc, char *argv[]) {
-    int nthreads;
-    int src, dst, middle;
-
-    // Initialize the graph with random distances
-    for (src = 0; src < N; src++) {
-        for (dst = 0; dst < N; dst++) {
-            if (src != dst) {
-                distance_matrix[src][dst] = rand() % 20;
-            }
-        }
-    }
-
-    // Sequential execution
-    double start_time = omp_get_wtime();
-    for (middle = 0; middle < N; middle++) {
-        int *dm = distance_matrix[middle];
-        for (src = 0; src < N; src++) {
-            int *ds = distance_matrix[src];
-            for (dst = 0; dst < N; dst++) {
-                ds[dst] = min(ds[dst], ds[middle] + dm[dst]);
-            }
-        }
-    }
-    double time = omp_get_wtime() - start_time;
-    printf("Total time for sequential (in sec): %.2f\n", time);
-
-    // Parallel execution
-    for (nthreads = 1; nthreads <= 10; nthreads++) {
-        omp_set_num_threads(nthreads);
-        start_time = omp_get_wtime();
-
-        #pragma omp parallel shared(distance_matrix)
-        {
-            #pragma omp for
-            for (middle = 0; middle < N; middle++) {
-                int *dm = distance_matrix[middle];
-                #pragma omp parallel for private(src, dst) schedule(dynamic)
-                for (src = 0; src < N; src++) {
-                    int *ds = distance_matrix[src];
-                    for (dst = 0; dst < N; dst++) {
-                        ds[dst] = min(ds[dst], ds[middle] + dm[dst]);
+void floydWarshall(int dist[V][V]) {
+    #pragma omp parallel for collapse(2)
+    for (int k = 0; k < V; k++) {
+        for (int i = 0; i < V; i++) {
+            for (int j = 0; j < V; j++) {
+                if (dist[i][k] < INF && dist[k][j] < INF) {
+                    int newDist = dist[i][k] + dist[k][j];
+                    if (newDist < dist[i][j]) {
+                        dist[i][j] = newDist;
                     }
                 }
             }
         }
-        time = omp_get_wtime() - start_time;
-        printf("Total time for thread %d (in sec): %.2f\n", nthreads, time);
     }
+}
 
+void printSolution(int dist[V][V]) {
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            if (dist[i][j] == INF)
+                printf("INF ");
+            else
+                printf("%d ", dist[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+int main() {
+    int dist[V][V];
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            dist[i][j] = graph[i][j];
+        }
+    }
+    floydWarshall(dist);
+    printSolution(dist);
     return 0;
 }
 
 COMP:-  gcc -fopenmp -o floyd_warshall floyd_warshall.c
 EXEC:-  ./floyd_warshall
 O/P:-
-Total time for sequential (in sec): 120.45
-Total time for thread 1 (in sec): 120.30
-Total time for thread 2 (in sec): 65.70
-Total time for thread 3 (in sec): 45.10
-Total time for thread 4 (in sec): 35.00
-Total time for thread 5 (in sec): 28.20
-Total time for thread 6 (in sec): 24.50
-Total time for thread 7 (in sec): 21.00
-Total time for thread 8 (in sec): 19.30
-Total time for thread 9 (in sec): 18.50
-Total time for thread 10 (in sec): 17.90
+0 3 7 5 
+2 0 6 4 
+3 1 0 5 
+5 3 2 0 
+
+GC:- %%writefile floyd_warshall.c, !gcc -fopenmp -o floyd_warshall floyd_warshall.c, !./floyd_warshall
