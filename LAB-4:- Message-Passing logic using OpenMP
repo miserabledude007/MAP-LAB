@@ -20,4 +20,7 @@ Hello World... from thread = 1
 Hello World... from thread = 2
 Hello World... from thread = 3
 
+!apt-get update
+!apt-get install -y g++ # Install the GNU C++ compiler
+
 GC:- %%writefile hello_world_parallel.c, !gcc -fopenmp -o hello_world_parallel hello_world_parallel.c, !./hello_world_parallel
