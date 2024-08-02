@@ -1,38 +1,72 @@
 FILE NAME:-  mpi_rank_example.c
 
+#include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <mpi.h>
-#include "tmpi_rank.h"
 #include <time.h>
 
-int main(int argc, char** argv) {
-    MPI_Init(NULL, NULL);
-    
-    int world_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
-    int world_size;
-    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+// Function to find the rank of each number
+void find_ranks(double *numbers, int *ranks, int size) {
+    for (int i = 0; i < size; i++) {
+        ranks[i] = 0;
+        for (int j = 0; j < size; j++) {
+            if (numbers[j] < numbers[i]) {
+                ranks[i]++;
+            }
+        }
+    }
+}
 
-    // Seed the random number generator to get different results each time
-    srand(time(NULL) * world_rank);
-    float rand_num = rand() / (float)RAND_MAX;
-    int rank;
-    
-    TMPI_Rank(&rand_num, &rank, MPI_FLOAT, MPI_COMM_WORLD);
-    printf("Rank for %f on process %d - %d\n", rand_num, world_rank, rank);
-    
-    MPI_Barrier(MPI_COMM_WORLD);
+int main(int argc, char *argv[]) {
+    int rank, size;
+    double my_number;
+    double *all_numbers = NULL;
+    int my_rank;
+
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    srand(time(NULL) + rank); // Seed random number generator
+    my_number = (double)rand() / RAND_MAX; // Generate random number
+
+    if (rank == 0) {
+        all_numbers = (double *)malloc(size * sizeof(double));
+    }
+
+    MPI_Gather(&my_number, 1, MPI_DOUBLE, all_numbers, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
+    if (rank == 0) {
+        int *ranks = (int *)malloc(size * sizeof(int));
+        find_ranks(all_numbers, ranks, size);
+        MPI_Scatter(ranks, 1, MPI_INT, &my_rank, 1, MPI_INT, 0, MPI_COMM_WORLD);
+        free(ranks);
+        free(all_numbers);
+    } else {
+        MPI_Scatter(NULL, 1, MPI_INT, &my_rank, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    }
+
+    printf("Rank for %f on process %d – %d\n", my_number, rank, my_rank);
+
     MPI_Finalize();
-    
     return 0;
 }
 
-COMP:-  mpicc -o mpi_rank_example mpi_rank_example.c tmpi_rank.c
+COMP:-  mpicc -o mpi_rank_example mpi_rank_example.c
 EXEC:-  mpirun -np <number_of_processes> ./mpi_rank_example
-:- mpirun -np 4 ./mpi_rank_example
+:- mpirun -np 4 ./mpi_rank_example 100
 O/P:-
-Rank for 0.123456 on process 0 - 1
-Rank for 0.654321 on process 1 - 2
-Rank for 0.987654 on process 2 - 3
-Rank for 0.543210 on process 3 - 0
+Rank for 0.716216 on process 1 – 1
+Rank for 0.860824 on process 0 – 2
+Rank for 0.578783 on process 2 – 0
+Rank for 0.934148 on process 3 – 3
+
+!apt-get update
+!apt-get install -y mpich
+!apt-get install -y python3-mpi4py
+
+import os
+os.environ['OMPI_ALLOW_RUN_AS_ROOT'] = '1'
+os.environ['OMPI_ALLOW_RUN_AS_ROOT_CONFIRM'] = '1'
+
+GC:- %%writefile mpi_rank_example.c, !mpicc -o mpi_rank_example mpi_rank_example.c, !mpirun --oversubscribe -np 4 ./mpi_rank_example 100
