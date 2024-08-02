@@ -1,40 +1,43 @@
 FILE NAME:-  montecarlo_pi.c
 
-#include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
+#include <math.h>
+#include <omp.h>
+#include <time.h>  
 
-void monteCarlo(int N, int K) {
-    double x, y;
-    double d;
-    int pCircle = 0;
-    int pSquare = 0;
-    int i;
-
-    #pragma omp parallel firstprivate(x, y, d, i) reduction(+ : pCircle, pSquare) num_threads(K)
-    {
-        srand48((int)time(NULL) + omp_get_thread_num());
-        #pragma omp for
-        for (i = 0; i < N; i++) {
-            x = (double)drand48();
-            y = (double)drand48();
-            d = (x * x) + (y * y);
-            if (d <= 1) {
-                pCircle++;
-            }
-            pSquare++;
-        }
-    }
-
-    double pi = 4.0 * ((double)pCircle / (double)pSquare);
-    printf("Final Estimation of Pi = %f\n", pi);
-}
+#define NUM_POINTS 1000000  // Number of random points to generate
 
 int main() {
-    int N = 100000;
-    int K = 8;
-    monteCarlo(N, K);
+    int insideCircle = 0;
+
+    // Seed the random number generator
+    srand((unsigned int)time(NULL));
+
+    // Parallel region
+    #pragma omp parallel
+    {
+        int localInsideCircle = 0;
+
+        #pragma omp for
+        for (int i = 0; i < NUM_POINTS; ++i) {
+            double x = (double)rand() / RAND_MAX;
+            double y = (double)rand() / RAND_MAX;
+
+            if (x * x + y * y <= 1.0) {
+                localInsideCircle++;
+            }
+        }
+
+        // Update the global counter
+        #pragma omp atomic
+        insideCircle += localInsideCircle;
+    }
+
+    // Estimate of π
+    double piEstimate = 4.0 * insideCircle / NUM_POINTS;
+    printf("Estimated value of π: %f\n", piEstimate);
+
     return 0;
 }
 
@@ -42,3 +45,8 @@ COMP:-  gcc -fopenmp -o montecarlo_pi montecarlo_pi.c
 EXEC:-  ./montecarlo_pi
 O/P:-
 Final Estimation of Pi = 3.141528
+
+!apt-get update
+!apt-get install -y g++ # Install the GNU C++ compiler
+
+GC:- %%writefile montecarlo_pi.c, !gcc -fopenmp -o montecarlo_pi montecarlo_pi.c, !./montecarlo_pi
