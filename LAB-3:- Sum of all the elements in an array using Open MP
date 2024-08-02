@@ -1,38 +1,49 @@
-FILE NAME:-  parallel_sum_max.cpp
+FILE NAME:-  parallel_sum_max.c
 
 #include <omp.h>
-#include <bits/stdc++.h>
-using namespace std;
+#include <stdio.h>
+#include <limits.h>
 
 int main() {
-    // Initialize the vector with some values
-    vector<int> arr{3, 1, 2, 5, 4, 0};
+    // Initialize the array with some values
+    int arr[] = {3, 1, 2, 5, 4, 0};
+    int n = sizeof(arr) / sizeof(arr[0]);
     int sum = 0;
     int max = INT_MIN; // Initialize to the smallest possible integer value
 
     // Compute the sum and find the maximum value in parallel
     #pragma omp parallel
     {
+        int local_sum = 0;
+        int local_max = INT_MIN;
         #pragma omp for
-        for (int i = 0; i < arr.size(); i++) {
-            sum += arr[i];
-            if (arr[i] > max) {
-                max = arr[i];
+        for (int i = 0; i < n; i++) {
+            local_sum += arr[i];
+            if (arr[i] > local_max) {
+                local_max = arr[i];
+            }
+        }
+
+        #pragma omp critical
+        {
+            sum += local_sum;
+            if (local_max > max) {
+                max = local_max;
             }
         }
     }
 
     // Print the results
-    cout << "Array sum: " << sum << endl;
-    cout << "Largest number in the array: " << max << endl;
+    printf("Array sum: %d\n", sum);
+    printf("Largest number in the array: %d\n", max);
 
     return 0;
 }
 
-COMP:-  g++ -fopenmp -o parallel_sum_max parallel_sum_max.cpp
+COMP:-  gcc -fopenmp -o parallel_sum_max parallel_sum_max.c
 EXEC:-  ./parallel_sum_max
 O/P:-
 Array sum: 15
 Largest number in the array: 5
 
-GC:- %%writefile parallel_sum_max.cpp, !g++ -fopenmp -o parallel_sum_max parallel_sum_max.cpp, !./parallel_sum_max
+GC:- %%writefile parallel_sum_max.c, !gcc -fopenmp -o parallel_sum_max parallel_sum_max.c, !./parallel_sum_max
