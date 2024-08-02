@@ -1,4 +1,4 @@
-FILE NAME:-  prefix_sum.cpp
+FILE NAME:-  parallel_sum_max.cpp
 
 #include <omp.h>
 #include <bits/stdc++.h>
@@ -42,8 +42,10 @@ int main() {
     return 0;
 }
 
-COMP:-  g++ -fopenmp -o prefix_sum prefix_sum.cpp
-EXEC:-  ./prefix_sum
+COMP:-  g++ -fopenmp -o parallel_sum_max parallel_sum_max.cpp
+EXEC:-  ./parallel_sum_max
 O/P:-
 Array sum: 15
 Largest number in the array: 5
+
+GC:- %%writefile parallel_sum_max.cpp, !g++ -fopenmp -o parallel_sum_max parallel_sum_max.cpp, !./parallel_sum_max
