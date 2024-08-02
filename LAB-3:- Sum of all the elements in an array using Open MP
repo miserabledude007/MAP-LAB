@@ -8,36 +8,24 @@ int main() {
     // Initialize the vector with some values
     vector<int> arr{3, 1, 2, 5, 4, 0};
     int sum = 0;
-    int max_value = INT_MIN; // Initialize to the smallest possible integer value
+    int max = INT_MIN; // Initialize to the smallest possible integer value
 
     // Compute the sum and find the maximum value in parallel
     #pragma omp parallel
     {
-        int local_sum = 0;
-        int local_max = INT_MIN;
-
         // Each thread computes its local sum and finds the local maximum
         #pragma omp for
         for (size_t i = 0; i < arr.size(); ++i) {
-            local_sum += arr[i];
-            if (arr[i] > local_max) {
-                local_max = arr[i];
-            }
-        }
-
-        // Update the shared sum variable and the maximum value in critical sections
-        #pragma omp critical
-        {
-            sum += local_sum;
-            if (local_max > max_value) {
-                max_value = local_max;
+            sum += arr[i];
+            if (arr[i] > max) {
+                max = arr[i];
             }
         }
     }
 
     // Print the results
     cout << "Array sum: " << sum << endl;
-    cout << "Largest number in the array: " << max_value << endl;
+    cout << "Largest number in the array: " << max << endl;
 
     return 0;
 }
