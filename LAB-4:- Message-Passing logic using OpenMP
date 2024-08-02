@@ -20,3 +20,5 @@ Hello World... from thread = 0
 Hello World... from thread = 1
 Hello World... from thread = 2
 Hello World... from thread = 3
+
+GC:- %%writefile hello_world_parallel.c, !gcc -fopenmp -o hello_world_parallel hello_world_parallel.c, !./hello_world_parallel
