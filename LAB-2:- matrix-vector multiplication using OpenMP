@@ -32,4 +32,7 @@ O/P:-
 c[0] = 28.000000 
 c[1] = 64.000000 
 
+!apt-get update
+!apt-get install -y g++ # Install the GNU C++ compiler
+
 GC:- %%writefile matrix_mult.c, !gcc -fopenmp -o matrix_mult matrix_mult.c, !./matrix_mult
