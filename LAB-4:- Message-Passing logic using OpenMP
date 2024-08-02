@@ -2,7 +2,6 @@ FILE NAME:-  hello_world_parallel.c
 
 #include <omp.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 int main (int argc, char* argv[])
 {
