@@ -1,30 +1,30 @@
 FILE NAME:-  mpi_send_recv.c
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <mpi.h>
+#include <stdio.h>
 
-int main(int argc, char **argv) {
+int main(int argc, char *argv[]) {
+    int rank, size;
     int number;
-    int tag = 1;
-    int size;
-    int rank;
-    MPI_Status status;
 
     MPI_Init(&argc, &argv);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
 
     if (size != 2) {
-        fprintf(stderr, "This program requires exactly 2 processes.\n");
-        MPI_Abort(MPI_COMM_WORLD, 1);
+        if (rank == 0) {
+            fprintf(stderr, "This program requires exactly 2 MPI processes.\n");
+        }
+        MPI_Finalize();
+        return 1;
     }
 
     if (rank == 0) {
-        number = -1; // Set the number to -1
-        MPI_Send(&number, 1, MPI_INT, 1, tag, MPI_COMM_WORLD);
+        number = -1;
+        MPI_Send(&number, 1, MPI_INT, 1, 0, MPI_COMM_WORLD);
+        printf("Process %d sent number %d to process 1\n", rank, number);
     } else if (rank == 1) {
-        MPI_Recv(&number, 1, MPI_INT, 0, tag, MPI_COMM_WORLD, &status);
+        MPI_Recv(&number, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         printf("Process %d received number %d from process 0\n", rank, number);
     }
 
@@ -35,4 +35,15 @@ int main(int argc, char **argv) {
 COMP:-  mpicc -o mpi_send_recv mpi_send_recv.c
 EXEC:-  mpirun -np 2 ./mpi_send_recv
 O/P:-
+Process 0 sent number -1 to process 1
 Process 1 received number -1 from process 0
+
+!apt-get update
+!apt-get install -y mpich
+!apt-get install -y python3-mpi4py
+
+import os
+os.environ['OMPI_ALLOW_RUN_AS_ROOT'] = '1'
+os.environ['OMPI_ALLOW_RUN_AS_ROOT_CONFIRM'] = '1'
+
+GC:- %%writefile mpi_send_recv.c, !mpicc -o mpi_send_recv mpi_send_recv.c, !mpirun --oversubscribe -np 2 ./mpi_send_recv
