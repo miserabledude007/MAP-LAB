@@ -61,4 +61,7 @@ O/P:-
 3 1 0 5 
 5 3 2 0 
 
+!apt-get update
+!apt-get install -y g++ # Install the GNU C++ compiler
+
 GC:- %%writefile floyd_warshall.c, !gcc -fopenmp -o floyd_warshall floyd_warshall.c, !./floyd_warshall
