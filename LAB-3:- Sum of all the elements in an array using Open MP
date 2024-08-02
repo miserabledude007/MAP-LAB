@@ -46,4 +46,7 @@ O/P:-
 Array sum: 15
 Largest number in the array: 5
 
+!apt-get update
+!apt-get install -y g++ # Install the GNU C++ compiler
+
 GC:- %%writefile parallel_sum_max.c, !gcc -fopenmp -o parallel_sum_max parallel_sum_max.c, !./parallel_sum_max
