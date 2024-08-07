@@ -1,32 +1,3 @@
-FILE NAME:-  mpi_broadcast.c
-
-#include <mpi.h>
-#include <stdio.h>
-
-int main(int argc, char *argv[]) {
-    int rank;
-    int data = 100; // Data to be broadcasted
-
-    MPI_Init(&argc, &argv);
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
-    if (rank == 0) {
-        printf("Process %d broadcasting data %d\n", rank, data);
-    }
-
-    // Broadcast data from root process (rank 0) to all other processes
-    MPI_Bcast(&data, 1, MPI_INT, 0, MPI_COMM_WORLD);
-
-    MPI_Finalize();
-    return 0;
-}
-
-COMP:-  mpicc -o mpi_broadcast mpi_broadcast.c
-EXEC:-  mpirun -np <number_of_processes> ./mpi_broadcast
-:- mpirun -np 2 ./mpi_broadcast
-O/P:-
-Process 0 broadcasting data 100
-
 !apt-get update
 !apt-get install -y mpich
 !apt-get install -y python3-mpi4py
@@ -35,4 +6,24 @@ import os
 os.environ['OMPI_ALLOW_RUN_AS_ROOT'] = '1'
 os.environ['OMPI_ALLOW_RUN_AS_ROOT_CONFIRM'] = '1'
 
-GC:- %%writefile mpi_broadcast.c, !mpicc -o mpi_broadcast mpi_broadcast.c, !mpirun --oversubscribe -np 2 ./mpi_broadcast
+%%writefile mpi_broadcast.c
+#include <mpi.h>
+#include <stdio.h>
+int main(int argc, char *argv[]) {
+    int rank;
+    int data = 100;
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    if (rank == 0) {
+        printf("Process %d broadcasting data %d\n", rank, data);
+    }
+    MPI_Bcast(&data, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Finalize();
+    return 0;
+}
+
+!mpicc -o mpi_broadcast mpi_broadcast.c
+
+!mpirun --oversubscribe -np 2 ./mpi_broadcast
+
+Process 0 broadcasting data 100
