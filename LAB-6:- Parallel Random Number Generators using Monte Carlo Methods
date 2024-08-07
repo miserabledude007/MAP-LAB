@@ -1,52 +1,37 @@
-FILE NAME:-  montecarlo_pi.c
+!apt-get update
+!apt-get install -y g++
 
+%%writefile montecarlo_pi.c
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <omp.h>
 #include <time.h>  
-
-#define NUM_POINTS 1000000  // Number of random points to generate
-
+#define NUM_POINTS 1000000
 int main() {
     int insideCircle = 0;
-
-    // Seed the random number generator
     srand((unsigned int)time(NULL));
-
-    // Parallel region
     #pragma omp parallel
     {
         int localInsideCircle = 0;
-
         #pragma omp for
         for (int i = 0; i < NUM_POINTS; ++i) {
             double x = (double)rand() / RAND_MAX;
             double y = (double)rand() / RAND_MAX;
-
             if (x * x + y * y <= 1.0) {
                 localInsideCircle++;
             }
         }
-
-        // Update the global counter
         #pragma omp atomic
         insideCircle += localInsideCircle;
     }
-
-    // Estimate of π
     double piEstimate = 4.0 * insideCircle / NUM_POINTS;
     printf("Estimated value of π: %f\n", piEstimate);
-
     return 0;
 }
 
-COMP:-  gcc -fopenmp -o montecarlo_pi montecarlo_pi.c
-EXEC:-  ./montecarlo_pi
-O/P:-
-Final Estimation of Pi = 3.141528
+!gcc -fopenmp -o montecarlo_pi montecarlo_pi.c
 
-!apt-get update
-!apt-get install -y g++ # Install the GNU C++ compiler
+!./montecarlo_pi
 
-GC:- %%writefile montecarlo_pi.c, !gcc -fopenmp -o montecarlo_pi montecarlo_pi.c, !./montecarlo_pi
+Estimated value of π: 3.142128
