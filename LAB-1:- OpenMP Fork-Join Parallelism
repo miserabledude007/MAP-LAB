@@ -1,8 +1,9 @@
-FILE NAME:-  thread_example.c
+!apt-get update
+!apt-get install -y g++
 
+%%writefile thread_example.c
 #include <stdio.h>
 #include <omp.h>
-
 int main(void)
 {
     printf("Before: total thread number is %d\n", omp_get_num_threads());
@@ -14,14 +15,11 @@ int main(void)
     return 0;
 }
 
-COMP:-  gcc -fopenmp -o thread_example thread_example.c
-EXEC:-  ./thread_example
-O/P:-
+!gcc -fopenmp -o thread_example thread_example.c
+
+!./thread_example
+
 Before: total thread number is 1
 Thread id is 0
+Thread id is 1
 After: total thread number is 1
-
-!apt-get update
-!apt-get install -y g++ # Install the GNU C++ compiler
-
-GC:- %%writefile thread_example.c, !gcc -fopenmp -o thread_example thread_example.c, !./thread_example
