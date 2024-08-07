@@ -1,8 +1,9 @@
-FILE NAME:-  hello_world_parallel.c
+!apt-get update
+!apt-get install -y g++
 
+%%writefile hello_world_parallel.c
 #include <omp.h>
 #include <stdio.h>
-
 int main (int argc, char* argv[])
 {
     #pragma omp parallel
@@ -12,15 +13,9 @@ int main (int argc, char* argv[])
     return 0;
 }
 
-COMP:-  gcc -fopenmp -o hello_world_parallel hello_world_parallel.c
-EXEC:-  ./hello_world_parallel
-O/P:-
+!gcc -fopenmp -o hello_world_parallel hello_world_parallel.c
+
+!./hello_world_parallel
+
 Hello World... from thread = 0
 Hello World... from thread = 1
-Hello World... from thread = 2
-Hello World... from thread = 3
-
-!apt-get update
-!apt-get install -y g++ # Install the GNU C++ compiler
-
-GC:- %%writefile hello_world_parallel.c, !gcc -fopenmp -o hello_world_parallel hello_world_parallel.c, !./hello_world_parallel
