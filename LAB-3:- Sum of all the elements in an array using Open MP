@@ -1,17 +1,15 @@
-FILE NAME:-  parallel_sum_max.c
+!apt-get update
+!apt-get install -y g++
 
+%%writefile parallel_sum_max.c
 #include <omp.h>
 #include <stdio.h>
 #include <limits.h>
-
 int main() {
-    // Initialize the array with some values
     int arr[] = {3, 1, 2, 5, 4, 0};
     int n = sizeof(arr) / sizeof(arr[0]);
     int sum = 0;
-    int max = INT_MIN; // Initialize to the smallest possible integer value
-
-    // Compute the sum and find the maximum value in parallel
+    int max = INT_MIN;
     #pragma omp parallel
     {
         int local_sum = 0;
@@ -23,7 +21,6 @@ int main() {
                 local_max = arr[i];
             }
         }
-
         #pragma omp critical
         {
             sum += local_sum;
@@ -32,21 +29,14 @@ int main() {
             }
         }
     }
-
-    // Print the results
     printf("Array sum: %d\n", sum);
     printf("Largest number in the array: %d\n", max);
-
     return 0;
 }
 
-COMP:-  gcc -fopenmp -o parallel_sum_max parallel_sum_max.c
-EXEC:-  ./parallel_sum_max
-O/P:-
+!gcc -fopenmp -o parallel_sum_max parallel_sum_max.c
+
+!./parallel_sum_max
+
 Array sum: 15
 Largest number in the array: 5
-
-!apt-get update
-!apt-get install -y g++ # Install the GNU C++ compiler
-
-GC:- %%writefile parallel_sum_max.c, !gcc -fopenmp -o parallel_sum_max parallel_sum_max.c, !./parallel_sum_max
